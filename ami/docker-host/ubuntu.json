@@ -13,9 +13,9 @@
 			"ssh_pty": "true",
 			"associate_public_ip_address": true,
 			"tags": {
-				"OWNER": "andy.kirkham",
-				"ENV_NAME": "ajk-docker-host",
-				"SYSTEM": "ajk-docker",
+				"OWNER": "{{user `git_user`}}",
+				"ENV_NAME": "{{user `git_user`}}-docker-host",
+				"SYSTEM": "{{user `git_user`}}-docker",
 				"Name": "{{user `ami_name`}}-{{timestamp}}",
 				"BuildBy": "hashicorp-build-tool-packer",
 				"BuildAt": "{{timestamp}}"
@@ -41,20 +41,20 @@
                 },
 		{
 			"type": "file",
-			"source": "files/playbooks",
-			"destination": "/home/ubuntu/playbooks",
+			"source": "files/",
+			"destination": "/home/ubuntu",
 			"only": [ "amazon-ebs" ]
 		},
 		{
 			"type": "shell",
 			"inline": [
 				"echo '==> Installing Ansible'",
-				"sudo apt-get install -y software-properties-common",
-				"sudo apt-add-repository -y ppa:ansible/ansible",
-				"sudo apt-get -y update",
-				"sudo apt-get install -y ansible",
+				"sudo -E apt-get install -y software-properties-common ca-certificates",
+				"sudo -E apt-add-repository -y ppa:ansible/ansible",
+				"sudo -E apt-get -y update",
+				"sudo -E apt-get install -y ansible",
 				"curl -sSL https://github.com/{{user `git_user`}}.keys >> /home/ubuntu/.ssh/authorized_keys",
-				"if [[ -e aws-sdk-cpp-key.pub ]]; then { cat aws-sdk-cpp-key.pub >> /home/ubuntu/.ssh/authorized_keys; }",
+				"if [ -e aws-sdk-cpp-key.pub ]; then { cat aws-sdk-cpp-key.pub >> /home/ubuntu/.ssh/authorized_keys; } else { echo \"No local pub key installed\"; } fi",
 				"ansible-playbook playbooks/setup.yml"
 			],
 			"only": [ "amazon-ebs" ]
