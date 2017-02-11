@@ -1,0 +1,63 @@
+{
+	"_comment": "Build Docker Host",
+	"variables": {
+	},
+	"builders": [
+		{
+			"type": "amazon-ebs",
+			"source_ami": "{{user `aws_ami`}}",
+			"instance_type": "t2.micro",
+			"region": "{{user `aws_region`}}",
+			"ami_name": "{{user `ami_name`}}-{{timestamp}}",
+			"ssh_username": "ubuntu",
+			"ssh_pty": "true",
+			"associate_public_ip_address": true,
+			"tags": {
+				"OWNER": "andy.kirkham",
+				"ENV_NAME": "ajk-docker-host",
+				"SYSTEM": "ajk-docker",
+				"Name": "{{user `ami_name`}}-{{timestamp}}",
+				"BuildBy": "hashicorp-build-tool-packer",
+				"BuildAt": "{{timestamp}}"
+			}
+		}
+	],
+	"provisioners": [
+		{
+			"type": "shell",
+			"inline": [
+				"echo '==> AMI builder, waiting 15secs, see https://groups.google.com/forum/#!topic/packer-tool/DuQ3WMk4sGE'",
+				"sleep 15"
+			],
+			"only": [ "amazon-ebs" ]
+		},
+		{
+                        "type": "shell",
+                        "inline": [
+				"echo \"{{user `git_user`}}\" > /home/ubuntu/.gitusername"
+				
+			],
+                        "only": [ "amazon-ebs" ]
+                },
+		{
+			"type": "file",
+			"source": "files/playbooks",
+			"destination": "/home/ubuntu/playbooks",
+			"only": [ "amazon-ebs" ]
+		},
+		{
+			"type": "shell",
+			"inline": [
+				"echo '==> Installing Ansible'",
+				"sudo apt-get install -y software-properties-common",
+				"sudo apt-add-repository -y ppa:ansible/ansible",
+				"sudo apt-get -y update",
+				"sudo apt-get install -y ansible",
+				"curl -sSL https://github.com/{{user `git_user`}}.keys >> /home/ubuntu/.ssh/authorized_keys",
+				"ansible-playbook playbooks/setup.yml"
+			],
+			"only": [ "amazon-ebs" ]
+		}
+	]
+}
+

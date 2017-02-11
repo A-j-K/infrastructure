@@ -1,0 +1,8 @@
+---
+- hosts: localhost
+  become: yes
+  no_log: false
+  roles:
+    - roles/packages
+    - roles/docker
+

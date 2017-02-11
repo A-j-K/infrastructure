@@ -1,0 +1,15 @@
+---
+
+- name: Install Docker Engine
+  become: true
+  shell: roles/docker/files/get_docker_com.sh
+
+- name: Check Docker Engine install
+  file:
+    path: /usr/bin/docker
+    state: file
+
+- name: Add ubuntu user to docker group
+  become: true
+  shell: usermod -aG docker ubuntu
+
