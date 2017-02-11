@@ -54,6 +54,7 @@
 				"sudo apt-get -y update",
 				"sudo apt-get install -y ansible",
 				"curl -sSL https://github.com/{{user `git_user`}}.keys >> /home/ubuntu/.ssh/authorized_keys",
+				"if [[ -e aws-sdk-cpp-key.pub ]]; then { cat aws-sdk-cpp-key.pub >> /home/ubuntu/.ssh/authorized_keys; }",
 				"ansible-playbook playbooks/setup.yml"
 			],
 			"only": [ "amazon-ebs" ]
