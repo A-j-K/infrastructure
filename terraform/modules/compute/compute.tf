@@ -10,16 +10,8 @@ variable "key_name"           { }
 variable "azs"                { }
 variable "private_subnet_ids" { }
 variable "public_subnet_ids"  { }
-variable "site_ssl_cert"      { }
-variable "site_ssl_key"       { }
-variable "vault_ssl_cert"     { }
-variable "atlas_username"     { }
-variable "atlas_environment"  { }
-variable "atlas_aws_global"   { }
-variable "atlas_token"        { }
 variable "sub_domain"         { }
 variable "route_zone_id"      { }
-variable "vault_token"        { default = "" }
 
 variable "docker_host_amis"          { }
 variable "docker_host_node_count"    { }
@@ -34,9 +26,6 @@ module "docker_host" {
   vpc_cidr           = "${var.vpc_cidr}"
   key_name           = "${var.key_name}"
   subnet_ids         = "${var.public_subnet_ids}"
-  atlas_username     = "${var.atlas_username}"
-  atlas_environment  = "${var.atlas_environment}"
-  atlas_token        = "${var.atlas_token}"
   amis               = "${var.docker_host_amis}"
   nodes              = "${var.docker_host_node_count}"
   instance_type      = "${var.docker_host_instance_type}"
