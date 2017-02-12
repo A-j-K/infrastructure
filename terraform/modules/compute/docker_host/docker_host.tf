@@ -7,9 +7,6 @@ variable "vpc_id"            { }
 variable "vpc_cidr"          { }
 variable "key_name"          { }
 variable "subnet_ids"        { }
-variable "atlas_username"    { }
-variable "atlas_environment" { }
-variable "atlas_token"       { }
 variable "amis"              { }
 variable "nodes"             { }
 variable "instance_type"     { }
