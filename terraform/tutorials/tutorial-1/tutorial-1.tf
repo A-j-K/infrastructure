@@ -23,14 +23,14 @@ module "tutorial-vpc" {
   }
 }
 
-module "docker_host_ssh_only_sg" {
+module "ssh_only_sg" {
   source = "git@github.com:A-j-K/terraform-modules.git//tutorials/tf_aws_sg/sg_ssh_only?ref=master"
   security_group_name = "${var.name}-docker-host-ssh-only-sg"
   vpc_id = "${module.tutorial-vpc.vpc_id}"
   source_cidr_block = "0.0.0.0/0"
 }
 
-module "docker_host_https_only_sg" {
+module "https_only_sg" {
   source = "git@github.com:A-j-K/terraform-modules.git//tutorials/tf_aws_sg/sg_https_only?ref=master"
   security_group_name = "${var.name}-docker-host-https-only-sg"
   vpc_id = "${module.tutorial-vpc.vpc_id}"
@@ -47,17 +47,16 @@ module "iam_role" {
 
 module "docker_host_3" {
   source = "git@github.com:A-j-K/terraform-modules.git//tutorials/docker_host?ref=master"
-  name = "docker_host_test"
+  name = "${var.name}-docker-host"
   ami = "ami-c4e924d2"
   instance_type = "t2.micro"
   iam_instance_profile = "${module.iam_role.iam_profile_id}"
   subnet_id = "${element(module.tutorial-vpc.public_subnets, 0)}"
   vpc_security_group_ids = [
-    "${module.docker_host_ssh_only_sg.security_group_id_ssh_only}",
-    "${module.docker_host_https_only_sg.security_group_id_https_only}"
+    "${module.ssh_only_sg.security_group_id_ssh_only}",
+    "${module.https_only_sg.security_group_id_https_only}"
   ]
   user_data = "${file("resources/user_data.sh")}"
 }
 
-# aws s3 cp "s3://terraform-tutorial-state-files/tutorial-network-vpc.tfstate" ./
 
